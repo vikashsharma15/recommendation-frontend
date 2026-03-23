@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-surface-200;
+  }
+
+  body {
+    @apply bg-surface-50 text-surface-900 font-sans antialiased;
+    font-feature-settings: 'ss01', 'ss02', 'cv01';
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-surface-300 rounded-full;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/80 backdrop-blur-xl border border-white/60;
+  }
+
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      theme('colors.surface.100') 25%,
+      theme('colors.surface.50') 50%,
+      theme('colors.surface.100') 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  .gradient-brand {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-brand-600 via-purple-600 to-cyan-500 bg-clip-text text-transparent;
+  }
+}
