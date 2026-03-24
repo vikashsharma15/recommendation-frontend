@@ -36,35 +36,6 @@ function PasswordStrength({ password }: { password: string }) {
   )
 }
 
-// ── Email domain validation ─────────────────────────────
-const VALID_DOMAINS = [
-  'gmail.com','yahoo.com','yahoo.in','outlook.com','hotmail.com',
-  'icloud.com','protonmail.com','proton.me','me.com','mac.com',
-  'live.com','msn.com','rediffmail.com','ymail.com','googlemail.com',
-]
-const BLOCKED = [
-  'mailinator.com','tempmail.com','10minutemail.com','guerrillamail.com',
-  'throwaway.email','trashmail.com','yopmail.com','sharklasers.com',
-  'fakeinbox.com','dispostable.com',
-]
-
-function validateEmail(email: string): string {
-  if (!email) return 'Email is required'
-  if (!email.includes('@')) return 'Enter a valid email address'
-  const [local, domain] = email.toLowerCase().split('@')
-  if (!local || !domain) return 'Enter a valid email address'
-  if (!domain.includes('.')) return 'Enter a valid email address'
-  if (BLOCKED.includes(domain)) return 'Disposable emails not allowed'
-  // Typo detection — common mistakes
-  const typos: Record<string, string> = {
-    'gmai.com':'gmail.com','gmial.com':'gmail.com','gmail.co':'gmail.com',
-    'gmail.cm':'gmail.com','yahooo.com':'yahoo.com','yaho.com':'yahoo.com',
-    'outloo.com':'outlook.com','hotmai.com':'hotmail.com',
-  }
-  if (typos[domain]) return `Did you mean @${typos[domain]}?`
-  return ''
-}
-
 const STEPS = ['Account', 'Interests'] as const
 type Step = typeof STEPS[number]
 
