@@ -13,12 +13,12 @@ export function useAuth() {
   const navigate = useNavigate()
   const qc       = useQueryClient()
 
-  // Auto-fetch user — only when authenticated AND user not in store
+  // Fetch user only when authenticated AND not in store
   const { data: meData } = useQuery({
     queryKey: ['me'],
     queryFn:  userService.getMe,
-    enabled:  isAuthenticated && !user,  // ← user already hai toh fetch mat karo
-    staleTime: 10 * 60 * 1000,           // 10 min — profile baar baar change nahi hoti
+    enabled:  isAuthenticated && !user,
+    staleTime: 10 * 60 * 1000,
     retry: false,
   })
 
@@ -39,18 +39,22 @@ export function useAuth() {
     onSuccess: async (res) => {
       setTokens(res.data.access_token, res.data.refresh_token)
 
-      // Single /me call — store mein set karo
+      // Single /me call
       const me = await userService.getMe()
       setUser(me.data)
-
-      // Store mein set karne ke baad query cache bhi update karo
-      // Taaki useQuery dobara fetch na kare
       qc.setQueryData(['me'], me)
 
-      // Background prefetch — feed instant load
-      prefetchRecommendations(qc)
+      // Smart greeting — new user vs returning
+      const u = me.data
+      const isNewUser = !u.bio && !u.full_name && (u.username_change_count || 0) === 0
+      if (isNewUser) {
+        toast.success(`Welcome to Recomr, ${u.username}! 🕷️`)
+      } else {
+        toast.success(`Welcome back, ${u.full_name || u.username}! 🕷️`)
+      }
 
-      toast.success(`Welcome back, ${me.data.username}! 🕷️`)
+      // Background prefetch
+      prefetchRecommendations(qc)
       navigate('/feed')
     },
     onError: (err) => toast.error(extractError(err)),
@@ -65,6 +69,15 @@ export function useAuth() {
     toast('Logged out', { icon: '👋' })
   }
 
+  // ── Refresh user from server ───────────────────────────
+  // Settings/Profile save ke baad call karo
+  const refreshUser = async () => {
+    const me = await userService.getMe()
+    setUser(me.data)
+    qc.setQueryData(['me'], me)
+    return me.data
+  }
+
   return {
     user: currentUser,
     isAuthenticated,
@@ -72,5 +85,6 @@ export function useAuth() {
     login,
     logout: handleLogout,
     setUser: (u: User) => setUser(u),
+    refreshUser,
   }
 }

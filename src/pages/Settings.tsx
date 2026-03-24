@@ -15,23 +15,22 @@ function Gold({ children }: { children: React.ReactNode }) {
 }
 
 export default function Settings() {
-  const { user, setUser, logout } = useAuth()
+  const { user, setUser, logout, refreshUser } = useAuth()
   const qc = useQueryClient()
-
-  // Local state — user.interests se initialize, live update hoga
   const [interests, setInterests] = useState<InterestCategory[]>(
     (user?.interests || []) as InterestCategory[]
   )
 
   const updatePrefs = useMutation({
     mutationFn: () => userService.updatePreferences(interests),
-    onSuccess: (res) => {
+    onSuccess: async (res) => {
       toast.success('Interests updated!')
-      // ── Fix: user store + query cache dono update karo ──
       if (res.data) {
         setUser(res.data as User)
         qc.setQueryData(['me'], res)
       }
+      // ── Refresh from server — production mein sync guarantee ──
+      await refreshUser()
       qc.invalidateQueries({ queryKey: ['recommendations'] })
     },
     onError: () => toast.error('Failed to update interests'),
@@ -50,7 +49,6 @@ export default function Settings() {
         <div>
           <div className="flex items-center justify-between mb-1">
             <h2 className="font-black text-white">Reading Interests</h2>
-            {/* Live count — local state se */}
             <span className="text-xs px-2 py-0.5 rounded-lg font-bold"
               style={{ background: 'rgba(212,168,67,0.1)', border: '1px solid rgba(212,168,67,0.2)', color: '#d4a843' }}>
               {interests.length} selected

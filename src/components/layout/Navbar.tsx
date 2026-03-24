@@ -4,7 +4,12 @@ import { Settings, LogOut, User, ChevronDown, Newspaper, BookOpen } from 'lucide
 import { useAuth } from '@/hooks/useAuth'
 import { cn } from '@/lib/utils'
 
-function getInitials(username: string) { return username.slice(0, 2).toUpperCase() }
+function getInitials(user: { username: string; full_name?: string }) {
+  const name = user.full_name || user.username
+  const parts = name.trim().split(' ').filter(Boolean)
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase()
+  return parts[0].slice(0, 2).toUpperCase()
+}
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth()
@@ -76,10 +81,10 @@ export default function Navbar() {
                   style={{ background: 'linear-gradient(135deg, #d4a843, #c8922a)', boxShadow: '0 0 10px rgba(212,168,67,0.3)' }}>
                   {user?.avatar_url
                     ? <img src={user.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
-                    : getInitials(user?.full_name || 'U')}
+                    : getInitials(user || { username: 'U' })}
                 </div>
                 <span className="hidden md:block text-sm font-semibold max-w-[100px] truncate" style={{ color: '#e0e0f0' }}>
-                  {user?.full_name}
+                  {user?.full_name || user?.username}
                 </span>
                 <ChevronDown className={cn('w-4 h-4 transition-transform', menuOpen && 'rotate-180')} style={{ color: '#50508a' }} />
               </button>
@@ -87,10 +92,11 @@ export default function Navbar() {
               {menuOpen && (
                 <div className="absolute right-0 top-full mt-2 w-52 rounded-2xl overflow-hidden"
                   style={{ background: '#12101e', border: '1px solid rgba(212,168,67,0.2)', boxShadow: '0 16px 40px rgba(0,0,0,0.6)', animation: 'scaleIn 0.15s ease' }}>
-                  {/* <div className="px-4 py-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}> */}
-                    {/* <p className="text-sm font-black text-white truncate">@{user?.username}</p> */}
-                    {/* <p className="text-xs truncate mt-0.5" style={{ color: '#50508a' }}>{user?.email}</p> */}
-                  {/* </div> */}
+                  <div className="px-4 py-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                    <p className="text-sm font-black text-white truncate">{user?.full_name || user?.username}</p>
+                    <p className="text-xs truncate" style={{ color: '#50508a' }}>@{user?.full_name || user?.username}</p>
+                    <p className="text-xs truncate mt-0.5" style={{ color: '#50508a' }}>{user?.email}</p>
+                  </div>
                   <div className="p-1.5">
                     <button onClick={() => { navigate('/profile'); setMenuOpen(false) }}
                       className="w-full flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all text-left"
