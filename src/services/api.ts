@@ -13,7 +13,7 @@
  * - HTTPS enforce hota hai production build mein
  */
 import axios from 'axios'
-import type { ApiResponse, ApiError } from '@/types'
+import type { ApiError } from '@/types'
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
