@@ -1,10 +1,12 @@
 import { useState } from 'react'
+
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { userService } from '@/services/user.service'
 import { useAuth } from '@/hooks/useAuth'
 import InterestSelector from '@/components/auth/InterestSelector'
 import type { InterestCategory } from '@/types'
+
 
 function Gold({ children }: { children: React.ReactNode }) {
   return (
@@ -60,16 +62,28 @@ export default function Settings() {
         style={{ background: '#0d0d1a', border: '1px solid rgba(255,255,255,0.06)' }}>
         <h2 className="font-black text-white mb-3">Account</h2>
         {[
-          { label: 'Username', value: `@${user?.username}` },
-          { label: 'Email', value: user?.email || '' },
-          { label: 'Status', value: 'Active' },
-        ].map(({ label, value }) => (
-          <div key={label} className="flex justify-between py-2.5"
-            style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-            <span className="text-sm" style={{ color: '#50508a' }}>{label}</span>
-            <span className="text-sm font-semibold" style={{ color: label === 'Status' ? '#10b981' : '#e0e0f0' }}>{value}</span>
-          </div>
-        ))}
+            { label: "Username", value: `@${user?.username}` },
+            { label: "Email", value: user?.email || "" },
+            { label: "Status", value: "Active" }
+          ].map(({ label, value }) => (
+            <div
+              key={label}
+              className="flex justify-between py-2.5"
+              style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+            >
+              <span className="text-sm" style={{ color: "#50508a" }}>
+                {label}
+              </span>
+
+              <span className="text-sm font-semibold">
+                {label === "Status" ? (
+                  <Gold>{value}</Gold>
+                ) : (
+                  <span style={{ color: "#e0e0f0" }}>{value}</span>
+                )}
+              </span>
+            </div>
+          ))}
       </div>
 
       {/* Danger */}
