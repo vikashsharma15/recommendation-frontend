@@ -1,5 +1,5 @@
 import { useState, memo, useCallback } from 'react'
-import { ThumbsUp, SkipForward, BookOpen, ExternalLink, X, Clock, Tag } from 'lucide-react'
+import { ThumbsUp, SkipForward, BookOpen, ExternalLink, X, Tag } from 'lucide-react'
 import type { Article, InteractionAction } from '@/types'
 
 const categoryColors: Record<string, string> = {
