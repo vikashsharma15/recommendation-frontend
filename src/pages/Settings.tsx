@@ -1,12 +1,10 @@
 import { useState } from 'react'
-
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { userService } from '@/services/user.service'
 import { useAuth } from '@/hooks/useAuth'
 import InterestSelector from '@/components/auth/InterestSelector'
-import type { InterestCategory } from '@/types'
-
+import type { InterestCategory, User } from '@/types'
 
 function Gold({ children }: { children: React.ReactNode }) {
   return (
@@ -17,17 +15,23 @@ function Gold({ children }: { children: React.ReactNode }) {
 }
 
 export default function Settings() {
-  const { user, logout } = useAuth()
+  const { user, setUser, logout } = useAuth()
   const qc = useQueryClient()
+
+  // Local state — user.interests se initialize, live update hoga
   const [interests, setInterests] = useState<InterestCategory[]>(
     (user?.interests || []) as InterestCategory[]
   )
 
   const updatePrefs = useMutation({
     mutationFn: () => userService.updatePreferences(interests),
-    onSuccess: () => {
+    onSuccess: (res) => {
       toast.success('Interests updated!')
-      qc.invalidateQueries({ queryKey: ['me'] })
+      // ── Fix: user store + query cache dono update karo ──
+      if (res.data) {
+        setUser(res.data as User)
+        qc.setQueryData(['me'], res)
+      }
       qc.invalidateQueries({ queryKey: ['recommendations'] })
     },
     onError: () => toast.error('Failed to update interests'),
@@ -44,7 +48,14 @@ export default function Settings() {
       <div className="rounded-2xl p-6 space-y-5"
         style={{ background: '#0d0d1a', border: '1px solid rgba(212,168,67,0.15)' }}>
         <div>
-          <h2 className="font-black text-white mb-1">Reading Interests</h2>
+          <div className="flex items-center justify-between mb-1">
+            <h2 className="font-black text-white">Reading Interests</h2>
+            {/* Live count — local state se */}
+            <span className="text-xs px-2 py-0.5 rounded-lg font-bold"
+              style={{ background: 'rgba(212,168,67,0.1)', border: '1px solid rgba(212,168,67,0.2)', color: '#d4a843' }}>
+              {interests.length} selected
+            </span>
+          </div>
           <p className="text-sm" style={{ color: '#50508a' }}>These determine what appears in your feed</p>
         </div>
         <InterestSelector selected={interests} onChange={setInterests} dark />
@@ -62,28 +73,21 @@ export default function Settings() {
         style={{ background: '#0d0d1a', border: '1px solid rgba(255,255,255,0.06)' }}>
         <h2 className="font-black text-white mb-3">Account</h2>
         {[
-            { label: "Username", value: `@${user?.username}` },
-            { label: "Email", value: user?.email || "" },
-            { label: "Status", value: "Active" }
-          ].map(({ label, value }) => (
-            <div
-              key={label}
-              className="flex justify-between py-2.5"
-              style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
-            >
-              <span className="text-sm" style={{ color: "#50508a" }}>
-                {label}
-              </span>
-
-              <span className="text-sm font-semibold">
-                {label === "Status" ? (
-                  <Gold>{value}</Gold>
-                ) : (
-                  <span style={{ color: "#e0e0f0" }}>{value}</span>
-                )}
-              </span>
-            </div>
-          ))}
+          { label: 'Username', value: user?.username || '' },
+          { label: 'Email',    value: user?.email    || '' },
+          { label: 'Status',   value: 'Active' },
+        ].map(({ label, value }) => (
+          <div key={label} className="flex justify-between py-2.5"
+            style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+            <span className="text-sm" style={{ color: '#50508a' }}>{label}</span>
+            <span className="text-sm font-semibold">
+              {label === 'Status'
+                ? <Gold>{value}</Gold>
+                : <span style={{ color: '#e0e0f0' }}>{value}</span>
+              }
+            </span>
+          </div>
+        ))}
       </div>
 
       {/* Danger */}
