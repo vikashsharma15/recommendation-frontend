@@ -24,4 +24,9 @@ export const userService = {
     const res = await api.patch('/users/me', data)
     return res.data
   },
+
+ async updateUsername(data: { username: string }): Promise<ApiResponse<User>> {
+  const res = await api.patch('/users/me/username', data)
+  return res.data
+}
 }

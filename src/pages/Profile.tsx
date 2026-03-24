@@ -19,6 +19,7 @@ function Gold({ children }: { children: React.ReactNode }) {
   )
 }
 
+
 const categoryColors: Record<string, string> = {
   'World': '#3b82f6', 'Sports': '#f59e0b',
   'Business': '#10b981', 'Science/Technology': '#8b5cf6',
@@ -30,6 +31,7 @@ export default function Profile() {
   const [editing, setEditing] = useState(false)
   const [form, setForm] = useState({
     full_name:  user?.full_name  || '',
+    username:   user?.username || '',
     bio:        user?.bio        || '',
     avatar_url: user?.avatar_url || '',
     cover_url:  user?.cover_url  || '',
@@ -37,17 +39,51 @@ export default function Profile() {
     linkedin:   user?.linkedin   || '',
     github:     user?.github     || '',
   })
+const updateUsername = useMutation({
+  mutationFn: () => userService.updateUsername({ username: form.username }),
 
+  onError: (err: any) => {
+    toast.error(err?.response?.data?.detail || 'Username update failed')
+  },
+})
   const updateProfile = useMutation({
-    mutationFn: () => userService.updateProfile(form),
-    onSuccess: (res) => {
-      toast.success('Profile updated!')
-      setEditing(false)
-      qc.setQueryData(['me'], res)
-      if (res.data) setUser(res.data as User)
-    },
-    onError: () => toast.error('Failed to update profile'),
-  })
+  mutationFn: async () => {
+    // 1. profile update
+    const profileRes = await userService.updateProfile({
+      full_name: form.full_name,
+      bio: form.bio,
+      avatar_url: form.avatar_url,
+      cover_url: form.cover_url,
+      twitter: form.twitter,
+      linkedin: form.linkedin,
+      github: form.github,
+    })
+
+    let finalUser = profileRes.data
+
+    // 2. username update
+    if (form.username !== user?.username) {
+      const usernameRes = await updateUsername.mutateAsync()
+
+      // ⭐ YAHI FIX HAI
+      finalUser = usernameRes.data
+    }
+
+    return finalUser
+  },
+
+  onSuccess: (finalUser) => {
+    toast.success('Profile updated!')
+    setEditing(false)
+
+    qc.setQueryData(['me'], finalUser)
+    qc.invalidateQueries({ queryKey: ['me'] })
+
+    if (finalUser) setUser(finalUser as User)
+  },
+
+  onError: () => toast.error('Failed to update profile'),
+})
 
   if (!user) return null
 
@@ -55,7 +91,6 @@ export default function Profile() {
   const changesThisMonth = user.username_change_count || 0
   const limit = 2
   const canChangeUsername = changesThisMonth < limit
-
   return (
     <div className="max-w-2xl mx-auto space-y-4 py-2">
 
@@ -235,17 +270,32 @@ export default function Profile() {
           <span className="text-xs ml-auto px-2 py-0.5 rounded-lg"
             style={{ background: canChangeUsername ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)', color: canChangeUsername ? '#10b981' : '#ef4444', border: `1px solid ${canChangeUsername ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'}` }}>
             {limit - changesThisMonth}/{limit} changes left
+            
           </span>
+          
         </div>
         <div className="flex items-center gap-2 p-3 rounded-xl mb-3" style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)' }}>
-          <AtSign className="w-4 h-4 shrink-0" style={{ color:'#50508a' }} />
-          <span className="text-sm font-mono font-bold text-white">{user.username}</span>
-        </div>
+        <AtSign className="w-4 h-4 shrink-0" style={{ color:'#50508a' }} />
+
+        {editing ? (
+          <input
+            value={form.username}
+            onChange={e => setForm(f => ({ ...f, username: e.target.value }))}
+            disabled={!canChangeUsername}
+            className="bg-transparent outline-none text-sm font-mono font-bold text-white w-full"
+            placeholder="Enter username"
+          />
+        ) : (
+          <span className="text-sm font-mono font-bold text-white">
+            {user.username}
+          </span>
+        )}
+        
+      </div>
         <p className="text-xs" style={{ color:'#50508a' }}>
           Username can be changed max {limit} times per month. Go to Settings to change.
         </p>
       </div>
-
       {/* Interests */}
       <div className="rounded-2xl p-5" style={{ background:'#0d0d1a', border:'1px solid rgba(212,168,67,0.15)' }}>
         <div className="flex items-center gap-2 mb-4">
