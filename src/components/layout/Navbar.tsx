@@ -5,10 +5,9 @@ import { useAuth } from '@/hooks/useAuth'
 import { cn } from '@/lib/utils'
 
 function getInitials(user: { username: string; full_name?: string }) {
-  const name = user.full_name || user.username
-  const parts = name.trim().split(' ').filter(Boolean)
-  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase()
-  return parts[0].slice(0, 2).toUpperCase()
+  const name = (user.full_name || user.username).trim()
+  // Single char — first letter only
+  return name[0].toUpperCase()
 }
 
 export default function Navbar() {

@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import {
   Twitter, Linkedin, Github, Edit2, Save, X,
   Calendar, Mail, Globe, Sparkles, User as UserIcon, AtSign
 } from 'lucide-react'
-
 import { useAuth } from '@/hooks/useAuth'
 import { userService } from '@/services/user.service'
 import { formatDate } from '@/lib/utils'
@@ -29,7 +28,6 @@ export default function Profile() {
   const { user, setUser } = useAuth()
   const qc = useQueryClient()
   const [editing, setEditing] = useState(false)
-  
   const [form, setForm] = useState({
     full_name:  user?.full_name  || '',
     bio:        user?.bio        || '',
@@ -40,23 +38,9 @@ export default function Profile() {
     github:     user?.github     || '',
   })
 
-  useEffect(() => {
-    if (user) {
-      setForm({
-        full_name:  user.full_name  || '',
-        bio:        user.bio        || '',
-        avatar_url: user.avatar_url || '',
-        cover_url:  user.cover_url  || '',
-        twitter:    user.twitter    || '',
-        linkedin:   user.linkedin   || '',
-        github:     user.github     || '',
-      })
-    }
-  }, [user])
   const updateProfile = useMutation({
     mutationFn: () => userService.updateProfile(form),
     onSuccess: (res) => {
-      console.log('API response:', res.data)
       toast.success('Profile updated!')
       setEditing(false)
       qc.setQueryData(['me'], res)
@@ -258,7 +242,7 @@ export default function Profile() {
           <span className="text-sm font-mono font-bold text-white">{user.username}</span>
         </div>
         <p className="text-xs" style={{ color:'#50508a' }}>
-          Username can be changed max {limit} times per month.
+          Username can be changed max {limit} times per month. Go to Settings to change.
         </p>
       </div>
 

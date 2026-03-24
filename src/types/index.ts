@@ -75,6 +75,7 @@ export interface ApiError {
 
 export interface RegisterPayload {
   username: string
+  full_name: string
   email: string
   password: string
   interests: InterestCategory[]

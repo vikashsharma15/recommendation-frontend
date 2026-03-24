@@ -60,7 +60,7 @@ export function AvatarUpload({
       ) : (
         <div className="rounded-full w-full h-full flex items-center justify-center font-black text-black"
           style={{ fontSize: size / 3, background: 'linear-gradient(135deg, #d4a843, #c8922a)', border: '3px solid rgba(212,168,67,0.5)', boxShadow: '0 0 20px rgba(212,168,67,0.3)' }}>
-          {username.slice(0, 2).toUpperCase()}
+          {(username[0] || "U").toUpperCase()}
         </div>
       )}
 
