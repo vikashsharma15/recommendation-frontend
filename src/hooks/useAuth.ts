@@ -50,7 +50,7 @@ export function useAuth() {
       if (isNewUser) {
         toast.success(`Welcome to Recomr, ${u.username}! 🕷️`)
       } else {
-        toast.success(`Welcome back, ${u.full_name || u.username}! 🕷️`)
+        toast.success(`Welcome, ${u.full_name || u.username}! 🕷️`)
       }
 
       // Background prefetch

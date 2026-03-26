@@ -18,10 +18,9 @@ export default function Feed() {
   const loaderRef = useRef<HTMLDivElement>(null)
   const [isRefreshing, setIsRefreshing] = useState(false)
 
-  // Infinite scroll
   useEffect(() => {
     const el = loaderRef.current
-    if (!el) return
+    if (!el || isLoading) return
     const observer = new IntersectionObserver(
       entries => {
         if (entries[0].isIntersecting && hasMore && !isFetchingMore) {
@@ -32,7 +31,7 @@ export default function Feed() {
     )
     observer.observe(el)
     return () => observer.disconnect()
-  }, [hasMore, isFetchingMore, fetchMore])
+  }, [hasMore, isFetchingMore, fetchMore, isLoading])  // isLoading dependency add kiya
 
   // Refresh — single call only
   const handleRefresh = useCallback(async () => {
@@ -104,7 +103,7 @@ export default function Feed() {
           <div className="w-px h-4 shrink-0" style={{ background: 'rgba(212,168,67,0.2)' }} />
           <div className="flex items-center gap-1.5 text-sm" style={{ color: '#9090c0' }}>
             <Sparkles className="w-4 h-4" style={{ color: '#8b5cf6' }} />
-            AI curated
+            PAi curated
           </div>
         </div>
       )}
@@ -115,7 +114,7 @@ export default function Feed() {
           style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.08), rgba(139,92,246,0.08))', border: '1px solid rgba(99,102,241,0.2)' }}>
           <div className="flex items-center gap-2 mb-2">
             <Sparkles className="w-4 h-4" style={{ color: '#d4a843' }} />
-            <span className="text-xs font-black tracking-wider uppercase" style={{ color: '#d4a843' }}>AI Insight</span>
+            <span className="text-xs font-black tracking-wider uppercase" style={{ color: '#d4a843' }}>PAi Insight</span>
           </div>
           <p className="text-sm leading-relaxed" style={{ color: '#c0c0d8' }}>{groqSummary}</p>
         </div>

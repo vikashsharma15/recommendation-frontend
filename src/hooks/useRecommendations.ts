@@ -26,6 +26,10 @@ export function useRecommendations() {
     getNextPageParam: (lastPage) => {
       const meta = lastPage.meta
       if (!meta) return undefined
+
+      // ── Fix: total = poore dataset ka count ────────────
+      // Backend total=50 bhejta hai (sab results)
+      // page_size=10, page=1 → totalPages=5 → next=2
       const totalPages = Math.ceil(meta.total / meta.page_size)
       return meta.page < totalPages ? meta.page + 1 : undefined
     },
@@ -41,10 +45,8 @@ export function useRecommendations() {
     },
     retryDelay: attempt => Math.min(1000 * 2 ** attempt, 8000),
 
-    // ── Critical: yeh dono false rakho ────────────────────
-    // Window focus / reconnect pe auto refetch = unnecessary calls
     refetchOnWindowFocus: false,
-    refetchOnReconnect:   false,  // ← true tha, false karo
+    refetchOnReconnect:   false,
   })
 
   const interact = useMutation({
@@ -52,11 +54,8 @@ export function useRecommendations() {
       recommendService.logInteraction(id, action),
 
     onMutate: async ({ id, action }) => {
-      // Cancel any in-flight queries — important
       await qc.cancelQueries({ queryKey: ['recommendations'] })
       const previous = qc.getQueryData(['recommendations'])
-
-      // Optimistic update
       qc.setQueryData(['recommendations'], (old: any) => {
         if (!old) return old
         return {
@@ -78,9 +77,6 @@ export function useRecommendations() {
     onSuccess: (_, { action }) => {
       if (action === 'liked')   toast.success('Liked! 🕷️')
       if (action === 'skipped') toast('Skipped', { icon: '⏭️' })
-      // ── NO invalidateQueries here ─────────────────────
-      // Backend cache invalidate hota hai
-      // Frontend pe dobara fetch nahi — avoid extra calls
     },
 
     onError: (_, __, context) => {
@@ -91,19 +87,20 @@ export function useRecommendations() {
 
   const articles    = query.data?.pages.flatMap(p => p.data?.recommendations ?? []) ?? []
   const groqSummary = query.data?.pages[0]?.data?.groq_summary ?? null
+
+  // ── Fix: totalCount = page 1 ka meta.total (poora dataset) ──
   const totalCount  = query.data?.pages[0]?.meta?.total ?? 0
 
   return {
-    articles, groqSummary, totalCount,
+    articles,
+    groqSummary,
+    totalCount,
     isLoading:      query.isLoading,
     isFetchingMore: query.isFetchingNextPage,
     hasMore:        query.hasNextPage ?? false,
     fetchMore:      query.fetchNextPage,
     interact,
-    // ── Single refetch function ───────────────────────────
-    // Feed.tsx mein sirf yeh call karo — baaki sab TanStack handle karta hai
     refetch: () => {
-      // Pehle cache invalidate karo, phir ek hi refetch
       qc.removeQueries({ queryKey: ['recommendations'] })
       return query.refetch()
     },

@@ -29,7 +29,7 @@ const categories = [
   { icon: Globe, label: 'World', sub: 'Politics · Geopolitics · Global', color: '#3b82f6' },
   { icon: Trophy, label: 'Sports', sub: 'Scores · Stats · Stories', color: '#f59e0b' },
   { icon: TrendingUp, label: 'Business', sub: 'Markets · Startups · Finance', color: '#10b981' },
-  { icon: Microscope, label: 'Science & Tech', sub: 'AI · Research · Breakthroughs', color: '#8b5cf6' },
+  { icon: Microscope, label: 'Science & Tech', sub: 'PAi · Research · Breakthroughs', color: '#8b5cf6' },
 ]
 
 function Counter({ target, suffix = '' }: { target: number; suffix?: string }) {
@@ -121,7 +121,7 @@ export default function Landing() {
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-black tracking-widest uppercase mb-8"
             style={{ background: 'rgba(212,168,67,0.1)', border: '1px solid rgba(212,168,67,0.3)', color: '#d4a843' }}>
             <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#d4a843' }} />
-            AI-Powered · 30,000+ Articles · Free Forever
+            PAi-Powered · 30,000+ Articles · Free Forever
           </div>
 
           {/* CEO-level copy */}
@@ -136,7 +136,7 @@ export default function Landing() {
 
           <p className="max-w-2xl mx-auto mb-10 font-light leading-relaxed"
             style={{ fontSize: 'clamp(1rem, 2vw, 1.15rem)', color: '#60608a' }}>
-            Recomr uses semantic AI to surface what you'd actually want to read —
+            Recomr uses semantic PAi to surface what you'd actually want to read —
             before you even know you want to read it.
           </p>
 
@@ -295,7 +295,7 @@ export default function Landing() {
             </div>
             <span className="text-sm font-black" style={{ color: '#d4a843' }}>Recomr</span>
           </div>
-          <p className="text-xs" style={{ color: '#30304a' }}>© 2026 Recomr · FastAPI · React · Pinecone · Redis</p>
+          <p className="text-xs" style={{ color: '#30304a' }}>© 2026 Recomr · Co-Creator- Vikash Sharma</p>
           <div className="flex items-center gap-5 text-xs" style={{ color: '#40406a' }}>
             <Link to="/register" className="transition-colors hover:text-white">Get started</Link>
             <Link to="/login" className="transition-colors hover:text-white">Sign in</Link>

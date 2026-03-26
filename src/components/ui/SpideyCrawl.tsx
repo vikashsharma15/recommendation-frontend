@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 
 const TIPS = [
-  "Hey hero! 🕷️ I'm your AI reading guide!",
+  "Hey hero! 🕷️ I'm your PAi reading guide!",
   "I've indexed 30,000 articles just for you! 🕸️",
   "Pick your interests — I'll spin the perfect feed! ✨",
   "With great articles comes great responsibility! 📰",

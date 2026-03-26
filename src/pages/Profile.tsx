@@ -64,11 +64,8 @@ const updateUsername = useMutation({
     // 2. username update
     if (form.username !== user?.username) {
       const usernameRes = await updateUsername.mutateAsync()
-
-      // ⭐ YAHI FIX HAI
       finalUser = usernameRes.data
     }
-
     return finalUser
   },
 
