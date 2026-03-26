@@ -56,18 +56,18 @@ function ArticleModal({ article, onClose }: { article: Article; onClose: () => v
         </div>
 
         {/* Body — scrollable */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-4">
+        {/* <div className="flex-1 overflow-y-auto p-5 space-y-4">
           <p className="text-sm leading-relaxed" style={{ color: '#c0c0d8', lineHeight: 1.8 }}>
             {article.description}
-          </p>
+          </p> */}
           {/* Placeholder for full content — article.content agar backend se aaye */}
-          <div className="p-4 rounded-xl" style={{ background: 'rgba(212,168,67,0.05)', border: '1px solid rgba(212,168,67,0.1)' }}>
+          {/* <div className="p-4 rounded-xl" style={{ background: 'rgba(212,168,67,0.05)', border: '1px solid rgba(212,168,67,0.1)' }}>
             <p className="text-xs font-bold mb-1" style={{ color: '#d4a843' }}>📰 Full article</p>
             <p className="text-xs" style={{ color: '#50508a' }}>
               Read the complete story on the original source — click the button below.
             </p>
           </div>
-        </div>
+        </div> */}
 
         {/* Footer */}
         <div className="p-4 shrink-0 flex items-center justify-between gap-3"
@@ -84,8 +84,7 @@ function ArticleModal({ article, onClose }: { article: Article; onClose: () => v
               Read on source
             </a>
           ) : (
-            <span className="text-xs px-4 py-2 rounded-xl" style={{ background: 'rgba(255,255,255,0.05)', color: '#50508a' }}>
-              No source URL
+            <span className="" style={{}}>
             </span>
           )}
         </div>
